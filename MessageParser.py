@@ -20,8 +20,9 @@ class MessageParser():
     def parse_error(self, payload):
         print('Recived an error:')
         print(json.dump(payload, indent=3))
+
     def parse_info(self, payload):
         print('Recived info:')
         print(json.dump(payload, indent=3))
-    
-    # Include more methods for handling the different responses... 
+
+    # Include more methods for handling the different responses...
