@@ -44,7 +44,7 @@ class Client:
 
         #Creates and starts MessageReceiver
         thread = MessageReceiver(client=self, connection=self.connection)
-        thread.start()
+    #    thread.start()
 
 
         #Reads user input
