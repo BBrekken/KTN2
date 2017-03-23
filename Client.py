@@ -21,11 +21,11 @@ class Client:
 
         #The valid requests a user can type in.
         self.validInputs = {
-            "login": self.login(self.inContent),
-            "logout": self.logout(),
-            "msg": self.msg(self.inContent),
-            "names": self.names(),
-            "help": self.help()
+            "login": self.login,
+            "logout": self.logout,
+            "msg": self.msg,
+            "names": self.names,
+            "help": self.help
         }
 
         # Users request
@@ -46,12 +46,13 @@ class Client:
         thread = MessageReceiver(client=self, connection=self.connection)
         thread.start()
 
+
         #Reads user input
         while True:
-            inputData = input('Input: ').split()
+            inputData = input('Input: ').split(' ', 1)
             self.inContent = inputData[1]
             if inputData[0] in self.validInputs:
-                self.request = self.validInputs[inputData[0]]
+                self.request = self.validInputs[inputData[0]](inputData)
             else:
                 print('This is not a valid request.')
 
@@ -62,41 +63,46 @@ class Client:
 
     def receive_message(self, message):
         # Parses a received message
-        self.messageParser.parse(message)
+        self.messageParser.parse(message.decode())
 
     def send_payload(self):
         # Handles and sends payload to Server
         jsonRequsest = json.dumps(self.request)
-        self.connection.sendall(jsonRequsest)
+        self.connection.sendall(jsonRequsest.encode())
 
     # More methods may be needed!
 
     # Method for login
-    def login(self, username):
-        if len(username) < 1:
+    def login(self, inputData):
+        if len(inputData[1]) < 1:
             print("Please type in username after 'login'.")
         else:
-            self.request['content'] = username
+            self.request['request'] = inputData[0]
+            self.request['content'] = inputData[1]
             self.send_payload()
 
     # Method for logout
-    def logout(self):
+    def logout(self, inputData):
+        self.request['request'] = inputData[0]
         self.send_payload()
 
     # Method for sending message
-    def msg(self, message):
-        if len(message) < 1:
+    def msg(self, inputData):
+        if len(inputData[1]) < 1:
             print("Please type in your message after 'msg'.")
         else:
-            self.request['content'] = message
+            self.request['request'] = inputData[0]
+            self.request['content'] = inputData[1]
             self.send_payload()
 
     # Method for getting all users
-    def names(self):
+    def names(self, inputData):
+        self.request['request'] = inputData[0]
         self.send_payload()
 
     # Method for getting help description
-    def help(self):
+    def help(self, inputData):
+        self.request['request'] = inputData[0]
         self.send_payload()
 
 
